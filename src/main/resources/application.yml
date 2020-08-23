@@ -1,0 +1,15 @@
+management:
+  endpoints:
+    enabled-by-default: false
+    web:
+      exposure:
+        include: health
+      base-path: /
+  endpoint:
+    health:
+      enabled: true
+service:
+  log.request:
+    excludedExceptions:
+      - com.miro.widget.exception.WidgetNotFoundException
+    pattern: ^(?!\/health).*
