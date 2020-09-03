@@ -2,23 +2,24 @@ package com.miro.widget.util;
 
 import com.miro.widget.model.Widget;
 
-import java.util.*;
+import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class WidgetUtils {
 
   public static List<Widget> updateZIndex(Widget widget, List<Widget> widgets) {
-    if (widgets.stream()
-        .anyMatch(widgetFiltered -> widgetFiltered.getZIndex().equals(widget.getZIndex()))) {
+    if (widgets.stream().anyMatch(widgetFiltered -> widgetFiltered.getZ().equals(widget.getZ()))) {
       List<Widget> shiftedWidgets =
-          widgets.stream()
-              .filter(w -> w.getZIndex() >= widget.getZIndex())
-              .collect(Collectors.toList());
+          widgets.stream().filter(w -> w.getZ() >= widget.getZ()).collect(Collectors.toList());
 
       shiftedWidgets.forEach(
           w -> {
-            w.setZIndex(w.getZIndex() + 1);
-            w.setLastModificationDate(new Date());
+            w.setZ(w.getZ() + 1);
+            w.setLastModificationDate(LocalDateTime.now());
           });
       return shiftedWidgets;
     } else {
@@ -27,13 +28,13 @@ public class WidgetUtils {
   }
 
   public static void checkNullZIndex(Widget widget, List<Widget> widgets) {
-    if (widget.getZIndex() == null) {
+    if (widget.getZ() == null) {
       int computedZIndex = 0;
-      Optional<Widget> max = widgets.stream().max(Comparator.comparingInt(Widget::getZIndex));
+      Optional<Widget> max = widgets.stream().max(Comparator.comparingInt(Widget::getZ));
       if (max.isPresent()) {
-        computedZIndex = max.get().getZIndex() + 1;
+        computedZIndex = max.get().getZ() + 1;
       }
-      widget.setZIndex(computedZIndex);
+      widget.setZ(computedZIndex);
     }
   }
 }

@@ -1,9 +1,7 @@
 package com.miro.widget.service;
 
-import com.miro.widget.exception.WidgetNotFoundException;
-import com.miro.widget.model.Widget;
-import com.miro.widget.model.WidgetData;
-import com.miro.widget.repository.WidgetRepository;
+import com.miro.widget.controller.request.WidgetRequest;
+import com.miro.widget.repository.WidgetRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -11,10 +9,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import java.util.Date;
-import java.util.List;
+import java.util.Collections;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -22,91 +20,66 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class WidgetServiceTest {
 
-  @Mock private WidgetRepository widgetRepository;
+  private final UUID testId = UUID.randomUUID();
 
-  private WidgetService widgetService;
-  private Widget widget;
+  @Mock private WidgetRepositoryImpl widgetRepository;
+
+  private WidgetServiceImpl widgetService;
 
   @BeforeEach
   public void init() {
-    widgetService = new WidgetService(widgetRepository);
-
-    widget = new Widget();
-    widget.setId("widget1");
+    widgetService = new WidgetServiceImpl(widgetRepository);
   }
 
   @Test
   void saveWidget() {
-    WidgetData data =
-        WidgetData.builder().x(1).y(2).zIndex(1).width(5).height(10).date(new Date()).build();
+    WidgetRequest request = new WidgetRequest(1, 2, 1, 5, 10);
+    widgetService.saveWidget(request);
 
-    widgetService.saveWidget(data);
-
-    ArgumentCaptor<Widget> argCap = ArgumentCaptor.forClass(Widget.class);
-
+    ArgumentCaptor<WidgetRequest> argCap = ArgumentCaptor.forClass(WidgetRequest.class);
     verify(widgetRepository).save(argCap.capture());
 
-    Widget testWidget = argCap.getValue();
+    WidgetRequest testRequest = argCap.getValue();
 
-    assertEquals(1, testWidget.getX());
-    assertEquals(2, testWidget.getY());
-    assertEquals(1, testWidget.getZIndex());
-    assertEquals(5, testWidget.getWidth());
-    assertEquals(10, testWidget.getHeight());
-    assertNotNull(testWidget.getLastModificationDate());
+    assertEquals(1, testRequest.getX());
+    assertEquals(2, testRequest.getY());
+    assertEquals(1, testRequest.getZ());
+    assertEquals(5, testRequest.getWidth());
+    assertEquals(10, testRequest.getHeight());
   }
 
   @Test
-  void editWidget() throws WidgetNotFoundException {
-    WidgetData data =
-        WidgetData.builder()
-            .id("widget1")
-            .x(1)
-            .y(3)
-            .zIndex(1)
-            .width(5)
-            .height(10)
-            .date(new Date())
-            .build();
+  void editWidget() throws Exception {
+    WidgetRequest request = new WidgetRequest(1, 3, 1, 5, 10);
+    widgetService.editWidget(testId, request);
 
-    when(widgetRepository.find(eq("widget1"))).thenReturn(widget);
-    widgetService.editWidget(data);
+    ArgumentCaptor<WidgetRequest> argCap = ArgumentCaptor.forClass(WidgetRequest.class);
+    verify(widgetRepository).update(eq(testId), argCap.capture());
 
-    ArgumentCaptor<Widget> argCap = ArgumentCaptor.forClass(Widget.class);
+    WidgetRequest testRequest = argCap.getValue();
 
-    verify(widgetRepository).update(argCap.capture());
-
-    Widget testWidget = argCap.getValue();
-
-    assertEquals("widget1", testWidget.getId());
-    assertEquals(1, testWidget.getX());
-    assertEquals(3, testWidget.getY());
-    assertEquals(1, testWidget.getZIndex());
-    assertEquals(5, testWidget.getWidth());
-    assertEquals(10, testWidget.getHeight());
-    assertNotNull(testWidget.getLastModificationDate());
+    assertEquals(1, testRequest.getX());
+    assertEquals(3, testRequest.getY());
+    assertEquals(1, testRequest.getZ());
+    assertEquals(5, testRequest.getWidth());
+    assertEquals(10, testRequest.getHeight());
   }
 
   @Test
-  void deleteWidget() throws WidgetNotFoundException {
-    WidgetData data = WidgetData.builder().id("widget1").date(new Date()).build();
-
-    when(widgetRepository.find(eq("widget1"))).thenReturn(widget);
-    widgetService.deleteWidget(data);
-
-    verify(widgetRepository).delete(eq("widget1"));
+  void deleteWidget() throws Exception {
+    widgetService.deleteWidget(testId);
+    verify(widgetRepository).delete(eq(testId));
   }
 
   @Test
-  void getWidget() throws WidgetNotFoundException {
-    widgetService.getWidget("widget1");
-
-    verify(widgetRepository).find(eq("widget1"));
+  void getWidget() throws Exception {
+    widgetService.getWidget(testId);
+    verify(widgetRepository).find(eq(testId));
   }
 
   @Test
   void getAllWidgets() {
-    when(widgetRepository.findAll()).thenReturn(List.of(widget));
+    when(widgetRepository.findAll()).thenReturn(Collections.emptyList());
     widgetService.getAllWidgets();
 
     verify(widgetRepository).findAll();

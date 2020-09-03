@@ -4,21 +4,18 @@ import com.miro.widget.model.Widget;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class WidgetUtilsTest {
 
   @Test
   void testUpdateZIndexShiftWidgets() {
-    Widget widget = new Widget();
-    widget.setZIndex(0);
+    Widget widget = widgetWithZIndex(0);
 
-    Widget widgetWithZeroIndex = new Widget();
-    widgetWithZeroIndex.setZIndex(0);
-
-    Widget widgetWithOneIndex = new Widget();
-    widgetWithOneIndex.setZIndex(1);
+    Widget widgetWithZeroIndex = widgetWithZIndex(0);
+    Widget widgetWithOneIndex = widgetWithZIndex(1);
 
     ArrayList<Widget> widgets = new ArrayList<>();
     widgets.add(widgetWithZeroIndex);
@@ -26,21 +23,17 @@ class WidgetUtilsTest {
 
     WidgetUtils.updateZIndex(widget, widgets);
 
-    assertEquals(widget.getZIndex(), 0);
-    assertEquals(widgetWithZeroIndex.getZIndex(), 1);
-    assertEquals(widgetWithOneIndex.getZIndex(), 2);
+    assertEquals(widget.getZ(), 0);
+    assertEquals(widgetWithZeroIndex.getZ(), 1);
+    assertEquals(widgetWithOneIndex.getZ(), 2);
   }
 
   @Test
   void testUpdateZIndexUnchangedWidgets() {
-    Widget widget = new Widget();
-    widget.setZIndex(3);
+    Widget widget = widgetWithZIndex(3);
 
-    Widget widgetWithZeroIndex = new Widget();
-    widgetWithZeroIndex.setZIndex(0);
-
-    Widget widgetWithOneIndex = new Widget();
-    widgetWithOneIndex.setZIndex(1);
+    Widget widgetWithZeroIndex = widgetWithZIndex(0);
+    Widget widgetWithOneIndex = widgetWithZIndex(1);
 
     ArrayList<Widget> widgets = new ArrayList<>();
     widgets.add(widgetWithZeroIndex);
@@ -48,8 +41,12 @@ class WidgetUtilsTest {
 
     WidgetUtils.updateZIndex(widget, widgets);
 
-    assertEquals(widget.getZIndex(), 3);
-    assertEquals(widgetWithZeroIndex.getZIndex(), 0);
-    assertEquals(widgetWithOneIndex.getZIndex(), 1);
+    assertEquals(widget.getZ(), 3);
+    assertEquals(widgetWithZeroIndex.getZ(), 0);
+    assertEquals(widgetWithOneIndex.getZ(), 1);
+  }
+
+  private Widget widgetWithZIndex(Integer zIndex) {
+    return new Widget(UUID.randomUUID(), 1, 1, zIndex, 1, 1);
   }
 }

@@ -1,48 +1,31 @@
 package com.miro.widget.repository;
 
+import com.miro.widget.controller.request.WidgetRequest;
 import com.miro.widget.exception.WidgetNotFoundException;
 import com.miro.widget.model.Widget;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.net.UnknownHostException;
-import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {WidgetRepositoryTest.TestConfiguration.class})
 class WidgetRepositoryTest {
 
-  @Autowired private WidgetRepository widgetRepository;
+  @Autowired private WidgetRepositoryImpl widgetRepository;
 
   public static class TestConfiguration {
     @Bean
-    public WidgetRepository repository() {
-      return new WidgetRepository();
+    public WidgetRepositoryImpl repository() {
+      return new WidgetRepositoryImpl();
     }
-  }
-
-  @BeforeEach
-  public void init() {
-    Widget widget = new Widget();
-    widget.setId("widget2");
-    widget.setX(1);
-    widget.setY(2);
-    widget.setZIndex(1);
-    widget.setWidth(5);
-    widget.setHeight(10);
-    widget.setLastModificationDate(new Date());
-    widgetRepository.save(widget);
   }
 
   @AfterEach
@@ -51,82 +34,68 @@ class WidgetRepositoryTest {
   }
 
   @Test
-  void testSave() throws WidgetNotFoundException {
-    Widget widget = new Widget();
-    widget.setId("widget1");
-    widget.setX(1);
-    widget.setY(2);
-    widget.setZIndex(1);
-    widget.setWidth(5);
-    widget.setHeight(10);
-    widget.setLastModificationDate(new Date());
+  void testSave() throws Exception {
+    Widget createdWidget = createWidget();
 
-    widgetRepository.save(widget);
+    Widget testWidget = widgetRepository.find(createdWidget.getId());
 
-    Widget testWidget = widgetRepository.find("widget1");
-    assertEquals("widget1", testWidget.getId());
     assertEquals(1, testWidget.getX());
     assertEquals(2, testWidget.getY());
-    assertEquals(1, testWidget.getZIndex());
+    assertEquals(1, testWidget.getZ());
     assertEquals(5, testWidget.getWidth());
     assertEquals(10, testWidget.getHeight());
   }
 
   @Test
-  void testUpdate() throws WidgetNotFoundException {
-    Widget widget = new Widget();
-    widget.setId("widget2");
-    widget.setX(10);
-    widget.setY(20);
-    widget.setZIndex(10);
-    widget.setWidth(50);
-    widget.setHeight(100);
-    widget.setLastModificationDate(new Date());
+  void testUpdate() throws Exception {
+    Widget createdWidget = createWidget();
 
-    widgetRepository.update(widget);
+    WidgetRequest request = new WidgetRequest(10, 20, 10, 50, 100);
+    Widget updatedWidget = widgetRepository.update(createdWidget.getId(), request);
 
-    Widget testWidget = widgetRepository.find("widget2");
-    assertEquals("widget2", testWidget.getId());
+    Widget testWidget = widgetRepository.find(updatedWidget.getId());
+
     assertEquals(10, testWidget.getX());
     assertEquals(20, testWidget.getY());
-    assertEquals(10, testWidget.getZIndex());
+    assertEquals(10, testWidget.getZ());
     assertEquals(50, testWidget.getWidth());
     assertEquals(100, testWidget.getHeight());
   }
 
   @Test
-  void testDelete() {
-    widgetRepository.delete("widget2");
-    assertThrows(WidgetNotFoundException.class, () -> widgetRepository.find("widget2"));
+  void testDelete() throws Exception {
+    Widget createdWidget = createWidget();
+
+    widgetRepository.delete(createdWidget.getId());
+
+    assertThrows(WidgetNotFoundException.class, () -> widgetRepository.find(createdWidget.getId()));
   }
 
   @Test
-  void testFind() throws WidgetNotFoundException {
-    Widget testWidget = widgetRepository.find("widget2");
+  void testFind() throws Exception {
+    Widget createdWidget = createWidget();
 
-    assertEquals("widget2", testWidget.getId());
-    assertEquals(1, testWidget.getX());
-    assertEquals(2, testWidget.getY());
-    assertEquals(1, testWidget.getZIndex());
-    assertEquals(5, testWidget.getWidth());
-    assertEquals(10, testWidget.getHeight());
+    Widget testWidget = widgetRepository.find(createdWidget.getId());
+    assertNotNull(testWidget);
   }
 
   @Test
   void testFindAll() {
-    List<Widget> widgets = widgetRepository.findAll();
+    createWidget();
 
-    assertNotNull(widgets);
+    List<Widget> widgets = widgetRepository.findAll();
     assertEquals(1, widgets.size());
 
     Widget testWidget = widgets.get(0);
-    assertEquals("widget2", testWidget.getId());
     assertEquals(1, testWidget.getX());
     assertEquals(2, testWidget.getY());
-    assertEquals(1, testWidget.getZIndex());
+    assertEquals(1, testWidget.getZ());
     assertEquals(5, testWidget.getWidth());
     assertEquals(10, testWidget.getHeight());
   }
 
-  // TODO: test z-index x 2
+  private Widget createWidget() {
+    WidgetRequest request = new WidgetRequest(1, 2, 1, 5, 10);
+    return widgetRepository.save(request);
+  }
 }

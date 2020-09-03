@@ -1,21 +1,35 @@
 package com.miro.widget.model;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import lombok.Data;
+import lombok.Getter;
 
-import java.util.Date;
-import java.util.function.Consumer;
+import java.time.LocalDateTime;
+import java.util.UUID;
 
-@Data
+@Getter
 public class Widget {
-  private String id;
-  private Integer x;
-  private Integer y;
+  private final UUID id;
+  private final Integer x;
+  private final Integer y;
+  private Integer z;
+  private final Integer width;
+  private final Integer height;
+  private LocalDateTime lastModificationDate;
 
-  @JsonProperty("z-index")
-  private Integer zIndex;
+  public Widget(UUID id, Integer x, Integer y, Integer z, Integer width, Integer height) {
+    this.id = id;
+    this.x = x;
+    this.y = y;
+    this.z = z;
+    this.width = width;
+    this.height = height;
+    this.lastModificationDate = LocalDateTime.now();
+  }
 
-  private Integer width;
-  private Integer height;
-  private Date lastModificationDate;
+  public void setZ(Integer zIndex) {
+    this.z = zIndex;
+  }
+
+  public void setLastModificationDate(LocalDateTime date) {
+    this.lastModificationDate = date;
+  }
 }
