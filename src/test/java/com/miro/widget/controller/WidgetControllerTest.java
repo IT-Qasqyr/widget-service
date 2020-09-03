@@ -39,7 +39,7 @@ class WidgetControllerTest {
                     "{\n"
                         + "  \"x\": 1,\n"
                         + "  \"y\": 2,\n"
-                        + "  \"zIndex\": 1,\n"
+                        + "  \"z\": 1,\n"
                         + "  \"width\": 5,\n"
                         + "  \"height\": 10\n"
                         + "}"))
@@ -71,7 +71,7 @@ class WidgetControllerTest {
                     "{\n"
                         + "  \"x\": 1,\n"
                         + "  \"y\": 3,\n"
-                        + "  \"zIndex\": 1,\n"
+                        + "  \"z\": 1,\n"
                         + "  \"width\": 5,\n"
                         + "  \"height\": 10\n"
                         + "}"))

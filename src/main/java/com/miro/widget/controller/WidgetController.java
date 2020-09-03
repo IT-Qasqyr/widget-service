@@ -6,7 +6,6 @@ import com.miro.widget.model.WidgetData;
 import com.miro.widget.request.WidgetRequest;
 import com.miro.widget.service.WidgetService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +13,6 @@ import javax.validation.Valid;
 import java.util.Date;
 import java.util.List;
 
-@Slf4j
 @RestController
 @AllArgsConstructor
 @RequestMapping("/api/widget")
@@ -29,7 +27,7 @@ public class WidgetController {
         WidgetData.builder()
             .x(widgetRequest.getX())
             .y(widgetRequest.getY())
-            .zIndex(widgetRequest.getZIndex())
+            .zIndex(widgetRequest.getZ())
             .width(widgetRequest.getWidth())
             .height(widgetRequest.getHeight())
             .date(new Date())
@@ -45,7 +43,7 @@ public class WidgetController {
             .id(id)
             .x(widgetRequest.getX())
             .y(widgetRequest.getY())
-            .zIndex(widgetRequest.getZIndex())
+            .zIndex(widgetRequest.getZ())
             .width(widgetRequest.getWidth())
             .height(widgetRequest.getHeight())
             .date(new Date())

@@ -10,7 +10,7 @@ public class WidgetRequest {
   @NotNull private Integer x;
   @NotNull private Integer y;
 
-  private Integer zIndex;
+  private Integer z;
 
   @NotNull @Positive private Integer width;
   @NotNull @Positive private Integer height;
