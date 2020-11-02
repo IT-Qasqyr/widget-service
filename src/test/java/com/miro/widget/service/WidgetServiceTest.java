@@ -2,8 +2,7 @@ package com.miro.widget.service;
 
 import com.miro.widget.exception.WidgetNotFoundException;
 import com.miro.widget.model.Widget;
-import com.miro.widget.model.WidgetData;
-import com.miro.widget.repository.WidgetRepository;
+import com.miro.widget.repository.WidgetRepositoryImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,14 +21,14 @@ import static org.mockito.Mockito.when;
 @ExtendWith(MockitoExtension.class)
 public class WidgetServiceTest {
 
-  @Mock private WidgetRepository widgetRepository;
+  @Mock private WidgetRepositoryImpl widgetRepository;
 
-  private WidgetService widgetService;
+  private WidgetServiceImpl widgetService;
   private Widget widget;
 
   @BeforeEach
   public void init() {
-    widgetService = new WidgetService(widgetRepository);
+    widgetService = new WidgetServiceImpl(widgetRepository);
 
     widget = new Widget();
     widget.setId("widget1");
@@ -37,10 +36,15 @@ public class WidgetServiceTest {
 
   @Test
   void saveWidget() {
-    WidgetData data =
-        WidgetData.builder().x(1).y(2).zIndex(1).width(5).height(10).date(new Date()).build();
+    Widget widget = new Widget();
+    widget.setX(1);
+    widget.setY(2);
+    widget.setZIndex(1);
+    widget.setWidth(5);
+    widget.setHeight(10);
+    widget.setLastModificationDate(new Date());
 
-    widgetService.saveWidget(data);
+    widgetService.saveWidget(widget);
 
     ArgumentCaptor<Widget> argCap = ArgumentCaptor.forClass(Widget.class);
 
@@ -58,19 +62,17 @@ public class WidgetServiceTest {
 
   @Test
   void editWidget() throws WidgetNotFoundException {
-    WidgetData data =
-        WidgetData.builder()
-            .id("widget1")
-            .x(1)
-            .y(3)
-            .zIndex(1)
-            .width(5)
-            .height(10)
-            .date(new Date())
-            .build();
+    Widget widget = new Widget();
+    widget.setId("widget1");
+    widget.setX(1);
+    widget.setY(3);
+    widget.setZIndex(1);
+    widget.setWidth(5);
+    widget.setHeight(10);
+    widget.setLastModificationDate(new Date());
 
     when(widgetRepository.find(eq("widget1"))).thenReturn(widget);
-    widgetService.editWidget(data);
+    widgetService.editWidget(widget);
 
     ArgumentCaptor<Widget> argCap = ArgumentCaptor.forClass(Widget.class);
 
@@ -89,10 +91,8 @@ public class WidgetServiceTest {
 
   @Test
   void deleteWidget() throws WidgetNotFoundException {
-    WidgetData data = WidgetData.builder().id("widget1").date(new Date()).build();
-
     when(widgetRepository.find(eq("widget1"))).thenReturn(widget);
-    widgetService.deleteWidget(data);
+    widgetService.deleteWidget("widget1");
 
     verify(widgetRepository).delete(eq("widget1"));
   }

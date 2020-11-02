@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 import java.util.Date;
-import java.util.function.Consumer;
 
 @Data
 public class Widget {

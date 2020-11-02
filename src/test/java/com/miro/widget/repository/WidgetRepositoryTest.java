@@ -10,25 +10,22 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.test.context.junit4.SpringRunner;
 
-import java.net.UnknownHostException;
 import java.util.Date;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @ExtendWith(SpringExtension.class)
 @ContextConfiguration(classes = {WidgetRepositoryTest.TestConfiguration.class})
 class WidgetRepositoryTest {
 
-  @Autowired private WidgetRepository widgetRepository;
+  @Autowired private WidgetRepositoryImpl widgetRepository;
 
   public static class TestConfiguration {
     @Bean
-    public WidgetRepository repository() {
-      return new WidgetRepository();
+    public WidgetRepositoryImpl repository() {
+      return new WidgetRepositoryImpl();
     }
   }
 
@@ -95,7 +92,7 @@ class WidgetRepositoryTest {
   }
 
   @Test
-  void testDelete() {
+  void testDelete() throws WidgetNotFoundException {
     widgetRepository.delete("widget2");
     assertThrows(WidgetNotFoundException.class, () -> widgetRepository.find("widget2"));
   }
@@ -127,6 +124,4 @@ class WidgetRepositoryTest {
     assertEquals(5, testWidget.getWidth());
     assertEquals(10, testWidget.getHeight());
   }
-
-  // TODO: test z-index x 2
 }

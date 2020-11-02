@@ -1,7 +1,8 @@
 package com.miro.widget.controller;
 
-import com.miro.widget.model.WidgetData;
-import com.miro.widget.service.WidgetService;
+import com.miro.widget.controller.map.WidgetMapper;
+import com.miro.widget.model.Widget;
+import com.miro.widget.service.WidgetServiceImpl;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,7 +29,9 @@ class WidgetControllerTest {
 
   @Autowired private MockMvc mvc;
 
-  @MockBean private WidgetService widgetService;
+  @MockBean private WidgetMapper mapper;
+
+  @MockBean private WidgetServiceImpl widgetService;
 
   @Test
   void testCreateWidget() throws Exception {
@@ -45,18 +48,18 @@ class WidgetControllerTest {
                         + "}"))
         .andExpect(status().isCreated());
 
-    ArgumentCaptor<WidgetData> argCap = ArgumentCaptor.forClass(WidgetData.class);
+    ArgumentCaptor<Widget> argCap = ArgumentCaptor.forClass(Widget.class);
 
     verify(widgetService, times(1)).saveWidget(argCap.capture());
 
-    WidgetData data = argCap.getValue();
+    Widget widget = argCap.getValue();
 
     assertThat(
-        data,
+        widget,
         Matchers.allOf(
             Matchers.hasProperty("x", Matchers.is(1)),
             Matchers.hasProperty("y", Matchers.is(2)),
-//            Matchers.hasProperty("zIndex", Matchers.is(1)),
+            //            Matchers.hasProperty("zIndex", Matchers.is(1)),
             Matchers.hasProperty("width", Matchers.is(5)),
             Matchers.hasProperty("height", Matchers.is(10)),
             Matchers.hasProperty("date", Matchers.any(Date.class))));
@@ -77,19 +80,19 @@ class WidgetControllerTest {
                         + "}"))
         .andExpect(status().isOk());
 
-    ArgumentCaptor<WidgetData> argCap = ArgumentCaptor.forClass(WidgetData.class);
+    ArgumentCaptor<Widget> argCap = ArgumentCaptor.forClass(Widget.class);
 
     verify(widgetService, times(1)).editWidget(argCap.capture());
 
-    WidgetData data = argCap.getValue();
+    Widget widget = argCap.getValue();
 
     assertThat(
-        data,
+        widget,
         Matchers.allOf(
             Matchers.hasProperty("id", Matchers.is("widget1")),
             Matchers.hasProperty("x", Matchers.is(1)),
             Matchers.hasProperty("y", Matchers.is(3)),
-//            Matchers.hasProperty("zIndex", Matchers.is(1)),
+            //            Matchers.hasProperty("zIndex", Matchers.is(1)),
             Matchers.hasProperty("width", Matchers.is(5)),
             Matchers.hasProperty("height", Matchers.is(10)),
             Matchers.hasProperty("date", Matchers.any(Date.class))));
@@ -97,29 +100,15 @@ class WidgetControllerTest {
 
   @Test
   void testDeleteWidget() throws Exception {
-    mvc.perform(
-            delete("/api/widget/{id}", "widget1")
-                .contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(delete("/api/widget/{id}", "widget1").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
 
-    ArgumentCaptor<WidgetData> argCap = ArgumentCaptor.forClass(WidgetData.class);
-
-    verify(widgetService, times(1)).deleteWidget(argCap.capture());
-
-    WidgetData data = argCap.getValue();
-
-    assertThat(
-        data,
-        Matchers.allOf(
-            Matchers.hasProperty("id", Matchers.is("widget1")),
-            Matchers.hasProperty("date", Matchers.any(Date.class))));
+    verify(widgetService, times(1)).deleteWidget("widget1");
   }
 
   @Test
   void testGetWidget() throws Exception {
-    mvc.perform(
-            get("/api/widget/{id}", "widget1")
-                .contentType(MediaType.APPLICATION_JSON))
+    mvc.perform(get("/api/widget/{id}", "widget1").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk());
 
     verify(widgetService, times(1)).getWidget(eq("widget1"));
